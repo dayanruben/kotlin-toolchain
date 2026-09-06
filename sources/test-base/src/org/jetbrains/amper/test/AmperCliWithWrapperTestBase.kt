@@ -207,6 +207,10 @@ abstract class AmperCliWithWrapperTestBase {
                     actual = result.stderr
                         .lines()
                         .filter { it.isNotBlank() }
+                        // The JVM itself prints these on stderr when the corresponding environment variables are set
+                        // (some CI agents and dev containers set them, for instance Air's Cloud tasks).
+                        // It's not our output, and we can't prevent it, so it must not fail the tests.
+                        .filterNot { it.isJvmPickedUpOptionsMessage() }
                         // we can't really do anything about this one, see KT-88611
                         .filterNot { "warning: KLIB loader: The same 'unique_name=kotlin-stdlib-common' found in more than one library" in it }
                         // LLVM dropped the AArch64 'zcm' feature in the version bundled since Kotlin 2.4.10 (LLVM 21),
@@ -382,3 +386,23 @@ private fun cleanAmperStdout(stdout: String): String {
 
 private fun String.isSporadicWrapperBootstrapMessage(): Boolean =
     sporadicWrapperBootstrapMessagePrefixes.any { this.startsWith(it) }
+
+/**
+ * The environment variables that make the JVM print a "Picked up ..." message on stderr on startup.
+ */
+private val jvmOptionsEnvVars = setOf(
+    "JAVA_TOOL_OPTIONS", // read by the JVM itself (JVMTI)
+    "_JAVA_OPTIONS", // read by HotSpot
+    "JDK_JAVA_OPTIONS", // read by the 'java' launcher (JDK 9+)
+)
+
+/**
+ * Whether this line is the JVM reporting that it picked up JVM options from the environment.
+ *
+ * Something like:
+ * ```
+ * Picked up _JAVA_OPTIONS: -Xmx256M
+ * NOTE: Picked up JDK_JAVA_OPTIONS: -Xmx256M
+ * ```
+ */
+private fun String.isJvmPickedUpOptionsMessage(): Boolean = jvmOptionsEnvVars.any { "Picked up $it:" in this }
