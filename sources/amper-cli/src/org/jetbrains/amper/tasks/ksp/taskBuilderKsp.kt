@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package org.jetbrains.amper.tasks.ksp
@@ -12,6 +12,7 @@ import org.jetbrains.amper.frontend.schema.enabled
 import org.jetbrains.amper.tasks.CommonTaskType
 import org.jetbrains.amper.tasks.ProjectTasksBuilder
 import org.jetbrains.amper.tasks.ProjectTasksBuilder.Companion.getTaskOutputPath
+import org.jetbrains.amper.tasks.android.AndroidModuleTaskType
 import org.jetbrains.amper.tasks.compilationTaskNameFor
 import org.jetbrains.amper.tasks.getModuleDependencies
 import org.jetbrains.amper.tasks.getTaskName
@@ -89,6 +90,9 @@ fun ProjectTasksBuilder.setupKspTasks() {
                     add(CommonTaskType.Dependencies.getTaskName(module, platform, isTest))
                     if (platform.isDescendantOf(Platform.ANDROID)) {
                         add(CommonTaskType.TransformDependencies.getTaskName(module, platform, isTest))
+                        // The Android platform jar (android.jar) is part of the compilation classpath, and processors
+                        // need it to resolve references to Android SDK types
+                        add(AndroidModuleTaskType.InstallPlatform.getTaskName(module, platform, isTest))
                     }
                     if (isTest) {
                         // test compilation depends on main classes

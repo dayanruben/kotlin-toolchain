@@ -4,11 +4,20 @@
 
 package com.jetbrains.sample.app
 
+import android.content.Context
 import androidx.room.*
 
 @Database(entities = [User::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+
+    companion object {
+        // DO NOT REMOVE (required for proper testing)
+        // The Context type comes from the Android SDK, so it forces the Room processor to resolve it from android.jar.
+        // Without the Android platform jar on the KSP classpath, Room fails with a [MissingType] error (KTC-5602).
+        fun create(context: Context): AppDatabase =
+            Room.databaseBuilder(context, AppDatabase::class.java, "users").build()
+    }
 }
 
 @Entity
