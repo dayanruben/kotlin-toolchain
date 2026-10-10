@@ -19,11 +19,10 @@
 {% endblock %}
 
 {# Warning banner shown when the version the user sees is not the one aliased as 'latest'.
-   Material unhides this banner based on versions.json, but the message itself is chosen at build time:
-   mike sets MIKE_DOCS_VERSION to the version ID it is deploying, and the CI sets MKDOCS_VERSION_COMING_SOON when that
-   version has no release yet (see the docs_version* variables in mkdocs.yml). #}
+   Material unhides this banner based on versions.json, but the message itself is chosen at build time based on
+   variables from mkdocs.yml. #}
 {% block outdated %}
-  {% set version = config.extra.docs_version %}
+  {% set version = config.extra.docs_version_id %}
   {% if version == "dev" %}
     <span class="twemoji">{% include ".icons/material/flask-outline.svg" %}</span>
     You're reading the docs of the development version, which may describe features that are not released yet.
@@ -32,8 +31,8 @@
     You're reading the docs of the upcoming version {{ version }}, which is not released yet.
   {% else %}
     <span class="twemoji">{% include ".icons/material/alert-outline.svg" %}</span>
-    You're reading the docs of {% if version %}version {{ version }}{% else %}a version{% endif %},
-    which is not the latest release.
+    You're reading the docs of {% if version %}version {{ version }}, which{% else %}a version that{% endif %}
+    is not the latest release.
   {% endif %}
   <a href="{{ '../' ~ base_url }}/latest/"><strong>Switch to the latest stable version.</strong></a>
 {% endblock %}

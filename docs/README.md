@@ -121,8 +121,8 @@ The banner markup lives in the `outdated` block of `overrides/main.html`:
 * **Whether** the banner is shown is decided at runtime by the Material theme: its JavaScript fetches `versions.json`
   and unhides the banner unless the current copy has the alias configured in `extra.version.default` (`latest`).
 * **Which** variant is rendered is decided at build time, based on variables from `mkdocs.yml`:
-  * `extra.docs_version` reads the `MIKE_DOCS_VERSION` environment variable, which mike sets to the version ID it is
-    deploying (`dev`, `0.10`, …).
+  * `extra.docs_version_id` reads the `MKDOCS_VERSION_ID` environment variable, which the `publish-docs` workflow sets
+    to the version ID passed to mike when deploying (`dev`, `0.10`, …).
   * `extra.dosc_version_coming_soon` reads the `MKDOCS_VERSION_COMING_SOON` environment variable, which the
     `publish-docs` workflow sets to `true` when the release branch has no tag yet.
 

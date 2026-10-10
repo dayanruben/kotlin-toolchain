@@ -91,6 +91,7 @@ jobs:
         env:
           MKDOCS_GIT_BRANCH: ${{ github.ref_name }}
           MKDOCS_GIT_EDIT_URL: edit/${{ github.ref_name }}/docs/src/
+          MKDOCS_VERSION_ID: ${{ steps.meta.outputs.version_id }}
           MKDOCS_VERSION_COMING_SOON: ${{ steps.meta.outputs.coming_soon }}
         run: |
           version_id="${{ steps.meta.outputs.version_id }}"
